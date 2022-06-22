@@ -1,7 +1,7 @@
 package models
 
 
-import "github.com/MarcosRoch4/loja/db"
+import "github.com/MarcosRoch4/db"
 
 type Produto struct{
 	id int64

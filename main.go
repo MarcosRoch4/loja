@@ -6,7 +6,7 @@ import (
 	"database/sql"
 
 	_ "github.com/lib/pq"
-	"github.com/MarcosRoch4/loja/models"
+	"github.com/MarcosRoch4/models"
 )
 
 var temp = template.Must(template.ParseGlob("templates/*.html"))
