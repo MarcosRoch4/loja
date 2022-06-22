@@ -1,4 +1,4 @@
-module loja
+module github.com/MarcosRoch4/loja
 
 go 1.18
 
