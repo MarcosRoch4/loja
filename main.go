@@ -3,9 +3,6 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"database/sql"
-
-	_ "github.com/lib/pq"
 	"github.com/MarcosRoch4/loja/models"
 )
 
