@@ -3,14 +3,12 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"github.com/MarcosRoch4/models"
+	"github.com/MarcosRoch4/loja/models"
 )
 
 var temp = template.Must(template.ParseGlob("templates/*.html"))
 
-func main() {
-
-	
+func main() {	
 	http.HandleFunc("/", index)
 	http.ListenAndServe(":8000", nil)
 
@@ -19,6 +17,7 @@ func main() {
 func index(w http.ResponseWriter, r *http.Request) {
 	
 	allProdutos := models.BuscaProdutos()
+	
 
 	temp.ExecuteTemplate(w, "Index", allProdutos)
 }

@@ -1,2 +1,4 @@
+github.com/MarcosRoch4/loja v0.0.0-20220622235350-2b01765ee551 h1:9qF08NUJblOAcowrCPYMXS1c7XXK3hphU1YN9AjjEVs=
+github.com/MarcosRoch4/loja v0.0.0-20220622235350-2b01765ee551/go.mod h1:WioCMnBcmZe3slv77ahgSA+P7uHTg7V4j8v/mZC9nHg=
 github.com/lib/pq v1.10.6 h1:jbk+ZieJ0D7EVGJYpL9QTz7/YW6UHbmdnZWYyK5cdBs=
 github.com/lib/pq v1.10.6/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
