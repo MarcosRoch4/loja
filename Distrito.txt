@@ -1,0 +1,113 @@
+Definir ALFA CUR_DISTRITAL;
+Definir ALFA aSQL;
+Definir ALFA aNomFil;
+Definir ALFA aCodFil;
+Definir ALFA aNumEmp;
+Definir ALFA aDatIni;
+Definir ALFA aDatFim;
+Definir ALFA aQuebra;
+Definir DATA dDatIni;
+Definir DATA dDatFim;
+Definir ALFA aEmaTxt;
+Definir ALFA aEmail;
+Definir ALFA aNomFun;
+Definir ALFA aNomLoc; 
+Definir ALFA aNumLoc;
+Definir ALFa aEmaAnx;
+
+
+
+dDatFim = DatSis;
+dDatIni = dDatFim - 90 ; 
+aDatIni = "";   
+aDatFim = "";
+aNumEmp = "";
+aEmaTxt = "";
+aNumLoc = "";
+aFilial = "";
+
+RetornaAscII (13,aQuebra);
+ConverteMascara (3, dDatIni, aDatIni, "YYYY-MM-DD");
+ConverteMascara (3, dDatFim, aDatFim, "YYYY-MM-DD"); 
+
+
+
+@ ---------- Retorna os dados dos gerentes Distritais  ----------------------- @
+@==============================================================================@
+
+
+aSQL = "";
+aSQL = "SELECT R034FUN.NumLoc,R030FIL.NumEmp,R030FIL.CodFil,R030FIL.NomFil     \
+               R034CPL.EmaCom,R034FUN.NomFun,R016ORN.NomLoc                    \ 
+          FROM R034FUN,R030FIL, R034CPL,R016ORN                                \
+         WHERE R030FIL.NumEmp = R034FUN.NumEmp                                 \
+           AND R030FIL.CodFil = R034FUN.CodFil                                 \
+           AND R034CPL.NumEmp = R034FUN.NumEmp                                 \
+           AND R034CPL.TipCol = R034FUN.TipCol                                 \
+           AND R034CPL.NumCad = R034FUN.NumCad                                 \
+           AND R016ORN.TabOrg = R034FUN.TabOrg                                 \
+           AND R016ORN.NumLoc = R034FUN.NumLoc                                 \
+            ND R034FUN.TabOrg = 4                                              \ 
+           AND R034FUN.NumLoc in (1,2701,3746,3901,4650,5013,5283)             \
+           AND R038AFA.DatAfa BETWEEN '" + aDatIni + "' AND '" + aDatFim + "'  \
+      GROUP BY R034FUN.NumLoc,R030FIL.NumEmp,R030FIL.CodFil,R030FIL.NomFil     \
+      ORDER BY R034FUN.NumLoc,QtdDes DESC";
+
+SQL_Criar(CUR_DISTRITAL); 
+SQL_UsarSQLSenior2(CUR_DISTRITAL, 0);
+SQL_UsarAbrangencia(CUR_DISTRITAL, 0);
+SQL_DefinirComando(CUR_DISTRITAL,aSQL);
+
+SQL_AbrirCursor(CUR_DISTRITAL);
+Enquanto(SQL_EOF(CUR_DISTRITAL)= 0)  
+Inicio       
+   aEmail = "";
+  aCodFil = "";   
+  aNomFil = "";
+  aNumEmp = "";    
+  aNomFun = "";     
+  aNomLoc = "";
+  aEmaTxt = ""; 
+  aNumLoc = "";
+
+  SQL_RetornarInteiro(CUR_DISTRITAL,"NumLoc",nNumLoc);
+  SQL_RetornarAlfa(CUR_DISTRITAL,"CodFil",aCodFil);  
+  SQL_RetornarAlfa(CUR_DISTRITAL,"NomFil",aNomFil);
+  SQL_RetornarAlfa(CUR_DISTRITAL,"NumEmp",aNumEmp);
+  SQL_RetornarAlfa(CUR_DISTRITAL,"EmaCom",aEmail);
+  SQL_RetornarAlfa(CUR_DISTRITAL,"NomFun",aNomFun);
+  SQL_RetornarAlfa(CUR_DISTRITAL,"NomLoc",aNomLoc);
+
+  @------------- Executa o relatório com os dados do Local ---------@
+    RetornaCodLoc(nNumLoc, aNumLoc);
+    SetaDataTelaEntrada("eDatRef", dDatIni);
+    SetaAlfaTelaEntrada("eCodDis", aNumLoc);    
+    ExecutaRelatorio("FPGE108.GER", "N");
+
+@------------- Enviar e-mail para o Gerente Distrital ---------@   
+
+    aEmaTxt = "Bom dia, segue relatório de representatividade de desligamentos, \
+    referente ao período " + aDatIni +" e " + aDatFim +"."
+
+    nXist = ArqExiste("C:\\Senior_Dev\\Report\\% Representativo de Desligamentos.pdf");
+    Se (nXist = 1)
+    Inicio
+        aEmaAnx = "C:\\Senior_Dev\\Report\\% Representativo de Desligamentos.pdf";
+        EnviaEmail ("seniorfsj@farmaciassaojoao.com.br", "marcos.rocha2@farmaciassaojoao.com.br",
+        "", "", "% Representativo de Desligamentos", aEmaTxt, aEmaAnx, 1);
+
+        aPrograma = "C:\\Senior_Dev\\Report\\Delete.bat";
+        ExecProg(aPrograma, "", 1);
+    Fim;
+      @gestaoderesultados@@farmaciassaojoao.com.br@
+    
+          
+               
+     Fim;       
+  
+  
+  SQL_Proximo(CUR_DISTRITAL);
+Fim;
+  
+Sql_FecharCursor(CUR_DISTRITAL);
+Sql_Destruir(CUR_DISTRITAL);
