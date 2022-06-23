@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"net/http"
 	"github.com/MarcosRoch4/loja/models"
-	"github.com/MarcosRoch4/loja/db"
 )
 
 var temp = template.Must(template.ParseGlob("templates/*.html"))
