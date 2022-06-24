@@ -1,17 +1,16 @@
 package models
 
+import "loja/db"
 
-//import "github.com/MarcosRoch4/loja/db"
-
-type Produto struct{
-	id int64
-	Nome string
-	Descricao string
-	Preco float64
-	Quantidade int64
+type Produto struct {
+	Id         int
+	Nome       string
+	Descricao  string
+	Preco      float64
+	Quantidade int
 }
 
-func BuscaProdutos(){
+func BuscaProdutos() []Produto {
 
 	db := db.ConectDB()
 	defer db.Close()
@@ -21,28 +20,55 @@ func BuscaProdutos(){
 	if err != nil {
 		panic(err.Error())
 	}
-	
-	p :=  Produto{}
+
+	p := Produto{}
 	produtos := []Produto{}
 
-	for produtosSelectAll.Next(){
-		var id, quantidade int64
-		var nome,descricao string
+	for produtosSelectAll.Next() {
+		var id, quantidade int
+		var nome, descricao string
 		var preco float64
 
-		err = produtosSelectAll.Scan(&id,&nome,&descricao,&preco,&quantidade)
+		err = produtosSelectAll.Scan(&id, &nome, &descricao, &preco, &quantidade)
 
 		if err != nil {
 			panic(err.Error())
 		}
 
+		p.Id = id
 		p.Nome = nome
 		p.Descricao = descricao
 		p.Preco = preco
 		p.Quantidade = quantidade
 
-		produtos = append(produtos,p)
+		produtos = append(produtos, p)
 
 	}
 	return produtos
+}
+
+func CriarNovoProduto(nome, descricacao string, preco float64, quantidade int) {
+	db := db.ConectDB()
+	defer db.Close()
+
+	insereDados, err := db.Prepare("INSERT INTO produtos (nome,descricao,preco,quantidade) VALUES ($1,$2,$3,$4)")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	insereDados.Exec(nome, descricacao, preco, quantidade)
+
+}
+
+func DeletaProduto(id string) {
+	db := db.ConectDB()
+	defer db.Close()
+
+	deletarProduto, err := db.Prepare("DELETE FROM produtos WHERE id = $1")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	deletarProduto.Exec(id)
+
 }
